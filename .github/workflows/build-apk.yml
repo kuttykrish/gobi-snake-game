@@ -35,5 +35,18 @@ jobs:
             exit 1
           fi
           cp -a "$(dirname "$MAIN_FILE")/." project/
+
+          
+      - name: Build APK
+        working-directory: project
+        run: buildozer android debug
+
+      - name: Save APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gobi-Snake-APK
+          path: project/bin/*.apk
+          if-no-files-found: error
+          
           
           
