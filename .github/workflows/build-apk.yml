@@ -35,7 +35,18 @@ jobs:
             exit 1
           fi
           cp -a "$(dirname "$MAIN_FILE")/." project/
+          
+      - name: Configure Android build
+        run: |
+          sed -i -E 's/^[[:space:]]*#?[[:space:]]*android\.ndk[[:space:]]*=.*/android.ndk = 25b/' project/buildozer.spec
+          sed -i -E 's/^[[:space:]]*#?[[:space:]]*android\.minapi[[:space:]]*=.*/android.minapi = 24/' project/buildozer.spec
+          grep -qE '^[[:space:]]*android\.ndk[[:space:]]*=' project/buildozer.spec || echo 'android.ndk = 25b' >> project/buildozer.spec
+          grep -qE '^[[:space:]]*android\.minapi[[:space:]]*=' project/buildozer.spec || echo 'android.minapi = 24' >> project/buildozer.spec
+          grep -E 'android.ndk|android.minapi' project/buildozer.spec
 
+      - name: Clean previous build
+        working-directory: project
+        run: rm -rf .buildozer
       
       - name: Pin Android NDK version
         run: |
