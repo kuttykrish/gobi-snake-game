@@ -23,20 +23,17 @@ jobs:
           pip install --upgrade pip setuptools wheel
           pip install buildozer cython
 
+      
       - name: Extract game
         run: |
-          mkdir project extracted
+          mkdir -p project extracted
           unzip -q Gobi_Snake_Android_Phone_Build.zip -d extracted
-          cp -a extracted/GobiSnakeAndroidBuild/. project/
-
-      - name: Build APK
-        working-directory: project
-        run: buildozer android debug
-
-      - name: Save APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: Gobi-Snake-APK
-          path: project/bin/*.apk
-          if-no-files-found: error
+          MAIN_FILE="$(find extracted -type f -name main.py -print -quit)"
+          if [ -z "$MAIN_FILE" ]; then
+            echo "main.py not found in ZIP"
+            find extracted -maxdepth 4 -type f
+            exit 1
+          fi
+          cp -a "$(dirname "$MAIN_FILE")/." project/
+          
           
