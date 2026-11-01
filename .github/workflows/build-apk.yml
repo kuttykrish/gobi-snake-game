@@ -47,15 +47,6 @@ jobs:
       - name: Clean previous build
         working-directory: project
         run: rm -rf .buildozer
-      
-      - name: Pin Android NDK version
-        run: |
-          if grep -qE '^[[:space:]]*#?[[:space:]]*android\.ndk[[:space:]]*=' project/buildozer.spec; then
-            sed -i -E 's/^[[:space:]]*#?[[:space:]]*android\.ndk[[:space:]]*=.*/android.ndk = 25b/' project/buildozer.spec
-          else
-            echo 'android.ndk = 25b' >> project/buildozer.spec
-          fi
-          grep 'android.ndk' project/buildozer.spec
 
       - name: Build APK
         working-directory: project
