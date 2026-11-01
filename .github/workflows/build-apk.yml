@@ -1,0 +1,42 @@
+
+name: Build Gobi Snake APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git zip unzip openjdk-17-jdk build-essential autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
+          pip install --upgrade pip setuptools wheel
+          pip install buildozer cython
+
+      - name: Extract game
+        run: |
+          mkdir project extracted
+          unzip -q Gobi_Snake_Android_Phone_Build.zip -d extracted
+          cp -a extracted/GobiSnakeAndroidBuild/. project/
+
+      - name: Build APK
+        working-directory: project
+        run: buildozer android debug
+
+      - name: Save APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gobi-Snake-APK
+          path: project/bin/*.apk
+          if-no-files-found: error
+          
